@@ -1,0 +1,183 @@
+Release 14.7 - xst P.20131013 (nt)
+Copyright (c) 1995-2013 Xilinx, Inc.  All rights reserved.
+--> Parameter TMPDIR set to xst/projnav.tmp
+
+
+Total REAL time to Xst completion: 0.00 secs
+Total CPU time to Xst completion: 0.16 secs
+ 
+--> Parameter xsthdpdir set to xst
+
+
+Total REAL time to Xst completion: 0.00 secs
+Total CPU time to Xst completion: 0.16 secs
+ 
+--> Reading design: stepper_test.prj
+
+TABLE OF CONTENTS
+  1) Synthesis Options Summary
+  2) HDL Parsing
+  3) HDL Elaboration
+  4) HDL Synthesis
+       4.1) HDL Synthesis Report
+  5) Advanced HDL Synthesis
+       5.1) Advanced HDL Synthesis Report
+  6) Low Level Synthesis
+  7) Partition Report
+  8) Design Summary
+       8.1) Primitive and Black Box Usage
+       8.2) Device utilization summary
+       8.3) Partition Resource Summary
+       8.4) Timing Report
+            8.4.1) Clock Information
+            8.4.2) Asynchronous Control Signals Information
+            8.4.3) Timing Summary
+            8.4.4) Timing Details
+            8.4.5) Cross Clock Domains Report
+
+
+=========================================================================
+*                      Synthesis Options Summary                        *
+=========================================================================
+---- Source Parameters
+Input File Name                    : "stepper_test.prj"
+Ignore Synthesis Constraint File   : NO
+
+---- Target Parameters
+Output File Name                   : "stepper_test"
+Output Format                      : NGC
+Target Device                      : xc7a100t-3-csg324
+
+---- Source Options
+Top Module Name                    : stepper_test
+Automatic FSM Extraction           : YES
+FSM Encoding Algorithm             : Auto
+Safe Implementation                : No
+FSM Style                          : LUT
+RAM Extraction                     : Yes
+RAM Style                          : Auto
+ROM Extraction                     : Yes
+Shift Register Extraction          : YES
+ROM Style                          : Auto
+Resource Sharing                   : YES
+Asynchronous To Synchronous        : NO
+Shift Register Minimum Size        : 2
+Use DSP Block                      : Auto
+Automatic Register Balancing       : No
+
+---- Target Options
+LUT Combining                      : Auto
+Reduce Control Sets                : Auto
+Add IO Buffers                     : YES
+Global Maximum Fanout              : 100000
+Add Generic Clock Buffer(BUFG)     : 32
+Register Duplication               : YES
+Optimize Instantiated Primitives   : NO
+Use Clock Enable                   : Auto
+Use Synchronous Set                : Auto
+Use Synchronous Reset              : Auto
+Pack IO Registers into IOBs        : Auto
+Equivalent register Removal        : YES
+
+---- General Options
+Optimization Goal                  : Speed
+Optimization Effort                : 1
+Power Reduction                    : NO
+Keep Hierarchy                     : No
+Netlist Hierarchy                  : As_Optimized
+RTL Output                         : Yes
+Global Optimization                : AllClockNets
+Read Cores                         : YES
+Write Timing Constraints           : NO
+Cross Clock Analysis               : NO
+Hierarchy Separator                : /
+Bus Delimiter                      : <>
+Case Specifier                     : Maintain
+Slice Utilization Ratio            : 100
+BRAM Utilization Ratio             : 100
+DSP48 Utilization Ratio            : 100
+Auto BRAM Packing                  : NO
+Slice Utilization Ratio Delta      : 5
+
+=========================================================================
+
+
+=========================================================================
+*                          HDL Parsing                                  *
+=========================================================================
+Parsing VHDL file "E:\Users\VuHaiLong\Desktop\PTIT4\do_an_so\do_an_so\main.vhd" into library work
+Parsing entity <stepper_test>.
+Parsing architecture <Behavioral> of entity <stepper_test>.
+WARNING:HDLCompiler:1369 - "E:\Users\VuHaiLong\Desktop\PTIT4\do_an_so\do_an_so\main.vhd" Line 60: Possible infinite loop; process does not have a wait statement
+
+=========================================================================
+*                            HDL Elaboration                            *
+=========================================================================
+
+Elaborating entity <stepper_test> (architecture <Behavioral>) from library <work>.
+WARNING:HDLCompiler:871 - "E:\Users\VuHaiLong\Desktop\PTIT4\do_an_so\do_an_so\main.vhd" Line 23: Using initial value 5 for s_speed since it is never assigned
+
+=========================================================================
+*                           HDL Synthesis                               *
+=========================================================================
+
+Synthesizing Unit <stepper_test>.
+    Related source file is "E:\Users\VuHaiLong\Desktop\PTIT4\do_an_so\do_an_so\main.vhd".
+WARNING:Xst:647 - Input <sw_dir> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+WARNING:Xst:647 - Input <sw_enable> is never used. This port will be preserved and left unconnected if it belongs to a top-level block or it belongs to a sub-block and the hierarchy of this sub-block is preserved.
+WARNING:Xst:2999 - Signal 'datas', unconnected in block 'stepper_test', is tied to its initial value.
+WARNING:Xst:3035 - Index value(s) does not match array range for signal <datas>, simulation mismatch.
+    Found 18x8-bit single-port Read Only RAM <Mram_datas> for signal <datas>.
+    Found 1-bit register for signal <clk_1hz>.
+    Found 32-bit register for signal <tocdo.check>.
+    Found 32-bit register for signal <persion_number_go_out>.
+    Found 32-bit register for signal <persion_number_come_in>.
+    Found 32-bit register for signal <lcd.i>.
+    Found 1-bit register for signal <lcd_e>.
+    Found 8-bit register for signal <data>.
+    Found 32-bit register for signal <lcd.j>.
+    Found 1-bit register for signal <lcd_rs>.
+    Found 32-bit register for signal <count_clk>.
+    Found finite state machine <FSM_0> for signal <tocdo.check>.
+    -----------------------------------------------------------------------
+    | States             | 3                                              |
+    | Transitions        | 8                                              |
+    | Inputs             | 2                                              |
+    | Outputs            | 2                                              |
+    | Clock              | clk_1hz (falling_edge)                         |
+    | Power Up State     | 00000000000000000000000000000000               |
+    | Encoding           | auto                                           |
+    | Implementation     | LUT                                            |
+    -----------------------------------------------------------------------
+    Found 32-bit adder for signal <count_clk[31]_GND_5_o_add_1_OUT> created at line 52.
+    Found 32-bit adder for signal <persion_number_go_out[31]_GND_5_o_add_6_OUT> created at line 68.
+    Found 32-bit adder for signal <persion_number_come_in[31]_GND_5_o_add_11_OUT> created at line 77.
+    Found 32-bit adder for signal <lcd.i[31]_GND_5_o_add_70_OUT> created at line 133.
+    Found 32-bit adder for signal <lcd.j[31]_GND_5_o_add_72_OUT> created at line 136.
+    Found 32-bit comparator greater for signal <GND_5_o_count_clk[31]_LessThan_1_o> created at line 51
+    Found 32-bit comparator lessequal for signal <GND_5_o_persion_number_go_out[31]_LessThan_6_o> created at line 67
+    Found 32-bit comparator lessequal for signal <GND_5_o_persion_number_come_in[31]_LessThan_11_o> created at line 76
+    Found 32-bit comparator greater for signal <n0029> created at line 95
+    Found 32-bit comparator greater for signal <GND_5_o_lcd.i[31]_LessThan_70_o> created at line 132
+    Found 32-bit comparator greater for signal <n0089> created at line 139
+    Summary:
+	inferred   1 RAM(s).
+	inferred   5 Adder/Subtractor(s).
+	inferred 171 D-type flip-flop(s).
+	inferred   6 Comparator(s).
+	inferred  13 Multiplexer(s).
+	inferred   1 Finite State Machine(s).
+Unit <stepper_test> synthesized.
+
+=========================================================================
+HDL Synthesis Report
+
+Macro Statistics
+# RAMs                                                 : 1
+ 18x8-bit single-port Read Only RAM                    : 1
+# Adders/Subtractors                                   : 5
+ 32-bit adder                                          : 5
+# Registers                                            : 9
+ 1-bit register                                        : 3
+ 32-bit register                                       : 5
+ 8-bit register                                        : 1
