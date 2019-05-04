@@ -26,7 +26,7 @@ architecture Behavioral of stepper_test is
 	signal count_clk: integer := 0;
 	signal clk_1hz: std_logic := '0'; 
 	--------------------------------------------------
-	constant N: integer :=20; 
+	constant N: integer :=17; 
 	type arr is array (1 to N) of std_logic_vector(7 downto 0);
 	--signal datas : arr :=    (X"38",X"0c",X"06",X"01",X"80",
 	--X"20",x"20",x"20",x"72",x"70",x"49");
@@ -37,10 +37,9 @@ architecture Behavioral of stepper_test is
 	
 	-- update string for team
 	signal datas : arr :=    (X"38",X"0c",X"06",X"01",X"80",
-	x"10",x"20",x"20",x"20",	-- > number_persons_in
-	x"C0",							-- endline
-	x"11",x"20",x"20",			-- < number_persion_out
-	x"20",x"50",x"45",x"52",x"53",x"4F",x"4E");
+	x"10",x"20",x"20",	-- > number_persons_in 78
+	x"11",x"20",x"20",	-- < number_persion_out 10 11
+	x"50",x"45",x"52",x"53",x"4F",x"4E");
 	-- endline with 0xC0
 	-- > 0x10
 	-- < 0x11

@@ -1,6 +1,9 @@
-set -tmpdir "E:/Users/VuHaiLong/Desktop/PTIT4/do_an_so/do_an_so/xst/projnav.tmp"
-set -xsthdpdir "E:/Users/VuHaiLong/Desktop/PTIT4/do_an_so/do_an_so/xst"
-run -compileonly yes
+set -tmpdir "xst/projnav.tmp"
+set -xsthdpdir "xst"
+run
+-ifn stepper_test.prj
+-ofn stepper_test
+-ofmt NGC
 -p xc7a100t-3-csg324
 -top stepper_test
 -opt_mode Speed
@@ -47,4 +50,3 @@ run -compileonly yes
 -iob Auto
 -equivalent_register_removal YES
 -slice_utilization_ratio_maxmargin 5
--ifn stepper_test.prj
