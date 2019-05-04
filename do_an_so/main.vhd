@@ -23,10 +23,16 @@ architecture Behavioral of stepper_test is
 	signal s_speed: integer := 5;
 	signal persion_number_go_out: integer := 0;
 	signal persion_number_come_in: integer := 0;
+
+	type arr_number_splited is array (1 downto 0) of integer;
+	
+	signal nguoi_vao :arr_number_splited := (0,0);
+	signal nguoi_ra :arr_number_splited := (0,0);
+
 	signal count_clk: integer := 0;
 	signal clk_1hz: std_logic := '0'; 
 	--------------------------------------------------
-	constant N: integer :=17; 
+	constant N: integer :=18; 
 	type arr is array (1 to N) of std_logic_vector(7 downto 0);
 	--signal datas : arr :=    (X"38",X"0c",X"06",X"01",X"80",
 	--X"20",x"20",x"20",x"72",x"70",x"49");
@@ -38,7 +44,7 @@ architecture Behavioral of stepper_test is
 	-- update string for team
 	signal datas : arr :=    (X"38",X"0c",X"06",X"01",X"80",
 	x"10",x"20",x"20",	-- > number_persons_in 78
-	x"11",x"20",x"20",	-- < number_persion_out 10 11
+	x"20",x"11",x"20",x"20",	-- < number_persion_out  11 12
 	x"50",x"45",x"52",x"53",x"4F",x"4E");
 	-- endline with 0xC0
 	-- > 0x10
@@ -95,6 +101,33 @@ begin
 		end if;
 	end if; 
 end process;
+-----------------------------------------------
+split_number: process(clk)
+variable i: integer  := 0;
+
+begin
+		nguoi_vao <= (0,0);
+		nguoi_ra  <= (0,0);
+		i := persion_number_come_in;
+		while (i > 10 ) loop
+			i := i - 10;
+			nguoi_vao(1) <= nguoi_vao(1) + 1;
+		end loop;
+		while (i > 0 ) loop
+			i := i ;
+			nguoi_vao(0) <= nguoi_vao(0) + 1;
+		end loop;
+		i:= persion_number_go_out;
+		while (i > 10 ) loop
+			i := i - 10;
+			nguoi_ra(1) <= nguoi_ra(1) + 1;
+		end loop;
+		while (i > 0 ) loop
+			i := i -1 ;
+			nguoi_ra(0) <= nguoi_ra(0) + 1 ;
+		end loop;
+end process; 
+
 
 -----------------------------------------------
 lcd_rw <= '0';
@@ -108,50 +141,51 @@ lcd : process(clk)
 			i := i + 1;
 			lcd_e <= '1';
 			-- bieu dien hang chuc 
-			if(j = 8) then
-				if(( (persion_number_come_in  / 10) rem  10 )= 1) then data <= X"31"; 
-				elsif( ( (persion_number_come_in  / 10) rem  10 ) = 2) then data <= X"32"; 
-				elsif( ( (persion_number_come_in  / 10) rem  10 ) = 3) then data <= X"33"; 
-				elsif( ( (persion_number_come_in  / 10) rem  10 ) = 4) then data <= X"34"; 
-				elsif( ( (persion_number_come_in  / 10) rem  10 )=  5) then data <= X"35"; 
-				elsif( ( (persion_number_come_in  / 10) rem  10 ) = 6) then data <= X"36"; 
-				elsif( ( (persion_number_come_in  / 10) rem  10 ) = 7) then data <= X"37"; 
-				elsif( ( (persion_number_come_in  / 10) rem  10 ) = 8) then data <= X"38";
-				elsif( ( (persion_number_come_in  / 10) rem  10 ) = 9) then data <= X"39";				
+			if(j = 7) then
+				if( nguoi_vao(1) = 1) then data <= X"31"; 
+				elsif( nguoi_vao(1) = 2) then data <= X"32"; 
+				elsif( nguoi_vao(1) = 3) then data <= X"33"; 
+				elsif( nguoi_vao(1) = 4) then data <= X"34"; 
+				elsif( nguoi_vao(1) = 5) then data <= X"35"; 
+				elsif( nguoi_vao(1) = 6) then data <= X"36"; 
+				elsif( nguoi_vao(1) = 7) then data <= X"37"; 
+				elsif( nguoi_vao(1) = 8) then data <= X"38"; 
+				elsif( nguoi_vao(1) = 9) then data <= X"39"; 			
 				end if; 
-			elsif(j = 9) then
-				if(( persion_number_come_in rem 10 )= 1) then data <= X"31"; 
-				elsif( (persion_number_come_in rem 10) = 2) then data <= X"32"; 
-				elsif( (persion_number_come_in rem 10) = 3) then data <= X"33"; 
-				elsif( (persion_number_come_in rem 10) = 4) then data <= X"34"; 
-				elsif( (persion_number_come_in rem 10)=  5) then data <= X"35"; 
-				elsif( (persion_number_come_in rem 10) = 6) then data <= X"36"; 
-				elsif( (persion_number_come_in rem 10) = 7) then data <= X"37"; 
-				elsif( (persion_number_come_in rem 10) = 8) then data <= X"38";
-				elsif( (persion_number_come_in rem 10) = 9) then data <= X"39";							
-				end if;
-			elsif(j = 12) then 
-				if(( (persion_number_go_out  / 10) rem  10 )= 1) then data <= X"31"; 
-				elsif( ( (persion_number_go_out  / 10) rem  10 ) = 2) then data <= X"32"; 
-				elsif( ( (persion_number_go_out  / 10) rem  10 ) = 3) then data <= X"33"; 
-				elsif( ( (persion_number_go_out  / 10) rem  10 ) = 4) then data <= X"34"; 
-				elsif( ( (persion_number_go_out  / 10) rem  10 )=  5) then data <= X"35"; 
-				elsif( ( (persion_number_go_out  / 10) rem  10 ) = 6) then data <= X"36"; 
-				elsif( ( (persion_number_go_out  / 10) rem  10 ) = 7) then data <= X"37"; 
-				elsif( ( (persion_number_go_out  / 10) rem  10 ) = 8) then data <= X"38";
-				elsif( ( (persion_number_go_out  / 10) rem  10 ) = 9) then data <= X"39";				
+			elsif(j = 8) then
+				if( nguoi_vao(1) = 1) then data <= X"31"; 
+					elsif( nguoi_vao(0) = 2) then data <= X"32"; 
+					elsif( nguoi_vao(0) = 3) then data <= X"33"; 
+					elsif( nguoi_vao(0) = 4) then data <= X"34"; 
+					elsif( nguoi_vao(0) = 5) then data <= X"35"; 
+					elsif( nguoi_vao(0) = 6) then data <= X"36"; 
+					elsif( nguoi_vao(0) = 7) then data <= X"37"; 
+					elsif( nguoi_vao(0) = 8) then data <= X"38"; 
+					elsif( nguoi_vao(0) = 9) then data <= X"39"; 			
 				end if; 
-			elsif(j = 13) then 
-				if(( persion_number_go_out rem 10 )= 1) then data <= X"31"; 
-				elsif( (persion_number_go_out rem 10) = 2) then data <= X"32"; 
-				elsif( (persion_number_go_out rem 10) = 3) then data <= X"33"; 
-				elsif( (persion_number_go_out rem 10) = 4) then data <= X"34"; 
-				elsif( (persion_number_go_out rem 10)= 5) then data <= X"35"; 
-				elsif( (persion_number_go_out rem 10) = 6) then data <= X"36"; 
-				elsif( (persion_number_go_out rem 10) = 7) then data <= X"37"; 
-				elsif( (persion_number_go_out rem 10) = 8) then data <= X"38";
-				elsif( (persion_number_go_out rem 10) = 9) then data <= X"39";				
+				
+			elsif(j = 11) then
+				if( nguoi_ra(1) = 1) then data <= X"31"; 
+				elsif( nguoi_ra(1) = 2) then data <= X"32"; 
+				elsif( nguoi_ra(1) = 3) then data <= X"33"; 
+				elsif( nguoi_ra(1) = 4) then data <= X"34"; 
+				elsif( nguoi_ra(1) = 5) then data <= X"35"; 
+				elsif( nguoi_ra(1) = 6) then data <= X"36"; 
+				elsif( nguoi_ra(1) = 7) then data <= X"37"; 
+				elsif( nguoi_ra(1) = 8) then data <= X"38"; 
+				elsif( nguoi_ra(1) = 9) then data <= X"39"; 			
 				end if; 
+			elsif(j = 12) then
+					if( nguoi_ra(1) = 1) then data <= X"31"; 
+					elsif( nguoi_ra(0) = 2) then data <= X"32"; 
+					elsif( nguoi_ra(0) = 3) then data <= X"33"; 
+					elsif( nguoi_ra(0) = 4) then data <= X"34"; 
+					elsif( nguoi_ra(0) = 5) then data <= X"35"; 
+					elsif( nguoi_ra(0) = 6) then data <= X"36"; 
+					elsif( nguoi_ra(0) = 7) then data <= X"37"; 
+					elsif( nguoi_ra(0) = 8) then data <= X"38"; 
+					elsif( nguoi_ra(0) = 9) then data <= X"39"; 			
+			end if; 		
 			-- init lcd 
 			else data <= datas(j)(7 downto 0); 
 			end if;
