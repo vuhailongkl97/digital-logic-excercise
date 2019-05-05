@@ -32,7 +32,7 @@ architecture Behavioral of stepper_test is
 	signal count_clk: integer := 0;
 	signal clk_1hz: std_logic := '0'; 
 	--------------------------------------------------
-	constant N: integer :=18; 
+	constant N: integer :=19; 
 	type arr is array (1 to N) of std_logic_vector(7 downto 0);
 	--signal datas : arr :=    (X"38",X"0c",X"06",X"01",X"80",
 	--X"20",x"20",x"20",x"72",x"70",x"49");
@@ -45,7 +45,7 @@ architecture Behavioral of stepper_test is
 	signal datas : arr :=    (X"38",X"0c",X"06",X"01",X"80",
 	x"10",x"20",x"20",	-- > number_persons_in 78
 	x"20",x"11",x"20",x"20",	-- < number_persion_out  11 12
-	x"50",x"45",x"52",x"53",x"4F",x"4E");
+	x"20",x"50",x"45",x"52",x"53",x"4F",x"4E");
 	-- endline with 0xC0
 	-- > 0x10
 	-- < 0x11
@@ -74,8 +74,11 @@ begin
 		if(sw_speed_up = '1') then 
 			if ( check = 3 ) then 
 					check := 0;
-					if ( persion_number_go_out < 100 ) then 
-						persion_number_go_out <= persion_number_go_out + 1;
+					-- tang so nguoi ra ngoai 
+					nguoi_ra(0) <= nguoi_ra(0) + 1;
+					if (nguoi_ra(0) = 10) then 
+						nguoi_ra(1) <= nguoi_ra(1) + 1;
+						nguoi_ra(0) <= 0;
 					end if;
 			else 
 				if ( check = 1) then 
@@ -87,10 +90,13 @@ begin
 		elsif(sw_speed_down = '1') then 
 			 if (check = 1) then
 					check := 0; -- reset state 
-					if ( persion_number_come_in < 100 ) then 
-						persion_number_come_in <= persion_number_come_in + 1;
+					--tang so nguoi vao trong 
+					nguoi_vao(0) <= nguoi_vao(0) + 1;
+					if (nguoi_vao(0) = 10) then 
+						nguoi_vao(1) <= nguoi_vao(1) + 1;
+						nguoi_vao(0) <= 0;
 					end if;
-			 else 
+			else 
 				if ( check = 3 ) then 
 					check := 0;
 				else 
@@ -101,34 +107,6 @@ begin
 		end if;
 	end if; 
 end process;
------------------------------------------------
-split_number: process(clk)
-variable i: integer  := 0;
-
-begin
-		nguoi_vao <= (0,0);
-		nguoi_ra  <= (0,0);
-		i := persion_number_come_in;
-		while (i > 10 ) loop
-			i := i - 10;
-			nguoi_vao(1) <= nguoi_vao(1) + 1;
-		end loop;
-		while (i > 0 ) loop
-			i := i ;
-			nguoi_vao(0) <= nguoi_vao(0) + 1;
-		end loop;
-		i:= persion_number_go_out;
-		while (i > 10 ) loop
-			i := i - 10;
-			nguoi_ra(1) <= nguoi_ra(1) + 1;
-		end loop;
-		while (i > 0 ) loop
-			i := i -1 ;
-			nguoi_ra(0) <= nguoi_ra(0) + 1 ;
-		end loop;
-end process; 
-
-
 -----------------------------------------------
 lcd_rw <= '0';
 -----------------------------------------------
@@ -150,10 +128,11 @@ lcd : process(clk)
 				elsif( nguoi_vao(1) = 6) then data <= X"36"; 
 				elsif( nguoi_vao(1) = 7) then data <= X"37"; 
 				elsif( nguoi_vao(1) = 8) then data <= X"38"; 
-				elsif( nguoi_vao(1) = 9) then data <= X"39"; 			
+				elsif( nguoi_vao(1) = 9) then data <= X"39"; 
+				else data <= X"0";
 				end if; 
 			elsif(j = 8) then
-				if( nguoi_vao(1) = 1) then data <= X"31"; 
+				if( nguoi_vao(1) = 0) then data <= X"31"; 
 					elsif( nguoi_vao(0) = 2) then data <= X"32"; 
 					elsif( nguoi_vao(0) = 3) then data <= X"33"; 
 					elsif( nguoi_vao(0) = 4) then data <= X"34"; 
@@ -161,7 +140,8 @@ lcd : process(clk)
 					elsif( nguoi_vao(0) = 6) then data <= X"36"; 
 					elsif( nguoi_vao(0) = 7) then data <= X"37"; 
 					elsif( nguoi_vao(0) = 8) then data <= X"38"; 
-					elsif( nguoi_vao(0) = 9) then data <= X"39"; 			
+					elsif( nguoi_vao(0) = 9) then data <= X"39"; 
+					else data <= X"0";
 				end if; 
 				
 			elsif(j = 11) then
@@ -173,10 +153,11 @@ lcd : process(clk)
 				elsif( nguoi_ra(1) = 6) then data <= X"36"; 
 				elsif( nguoi_ra(1) = 7) then data <= X"37"; 
 				elsif( nguoi_ra(1) = 8) then data <= X"38"; 
-				elsif( nguoi_ra(1) = 9) then data <= X"39"; 			
+				elsif( nguoi_ra(1) = 9) then data <= X"39"; 
+				else data <= X"0";				
 				end if; 
 			elsif(j = 12) then
-					if( nguoi_ra(1) = 1) then data <= X"31"; 
+					if( nguoi_ra(0) = 1) then data <= X"31"; 
 					elsif( nguoi_ra(0) = 2) then data <= X"32"; 
 					elsif( nguoi_ra(0) = 3) then data <= X"33"; 
 					elsif( nguoi_ra(0) = 4) then data <= X"34"; 
@@ -184,8 +165,9 @@ lcd : process(clk)
 					elsif( nguoi_ra(0) = 6) then data <= X"36"; 
 					elsif( nguoi_ra(0) = 7) then data <= X"37"; 
 					elsif( nguoi_ra(0) = 8) then data <= X"38"; 
-					elsif( nguoi_ra(0) = 9) then data <= X"39"; 			
-			end if; 		
+					elsif( nguoi_ra(0) = 9) then data <= X"39"; 
+					else data <= X"0";
+					end if; 		
 			-- init lcd 
 			else data <= datas(j)(7 downto 0); 
 			end if;
