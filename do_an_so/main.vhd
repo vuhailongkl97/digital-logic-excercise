@@ -5,15 +5,15 @@ use IEEE.STD_LOGIC_ARITH.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity counter_person is
-    Port ( 
-			clk : in  STD_LOGIC;
-			sw_enable : in  STD_LOGIC;
-			sensor_1 : in STD_LOGIC;				-- hong ngoai 1 as button1
-			sensor_2: in STD_LOGIC;			-- hong ngoai 2 as button2
-			lcd_rw	: out std_logic;   				-- read & write control
-			lcd_e 	: out std_logic;   				-- enable control
-			lcd_rs	: out std_logic;   				-- data or command control
-			data  	: out std_logic_vector(7 downto 0)); -- data field for transfer from fpga to lcd
+	Port ( 
+		clk : in  STD_LOGIC;
+		sw_enable : in  STD_LOGIC;
+		sensor_1 : in STD_LOGIC;				-- hong ngoai 1 as button1
+		sensor_2: in STD_LOGIC;				--hong ngoai 2 as button2
+		lcd_rw	: out std_logic;				-- read & write control
+		lcd_e 	: out std_logic;				-- enable control
+		lcd_rs	: out std_logic;				-- data or command control
+		data  	: out std_logic_vector(7 downto 0)); -- data field for transfer from fpga to lcd
 end counter_person;
 
 architecture Behavioral of counter_person is
@@ -58,18 +58,29 @@ Div : process(clk)
 -----------------------------------------------
 countp: process
 variable check : integer := 0;
+variable start_wait1 : integer := 0;
+variable start_wait2 : integer := 0;
 begin
 	if(falling_edge(clk_1hz)) then 
-		if(sensor_1 = '1') then 
+		if (sensor_1 = '0' and start_wait1 = 1) then
+			start_wait1 = 0;
+		end if;
+		
+		if (sensor_2 = '0' and start_wait2 = 1) then
+			start_wait2 = 0;
+		end if;
+		
+		if(sensor_1 = '1' and start_wait1 = 0 ) then 
+			start_wait1 = 1 ;
 			if ( check = 3 ) then 
-					check := 0;
-					-- tang so nguoi ra ngoai 
-					if (nguoi_ra(0) = 9) then 
-						nguoi_ra(1) <= nguoi_ra(1) + 1;
-						nguoi_ra(0) <= 0;
-					else 
-						nguoi_ra(0) <= nguoi_ra(0) + 1;
-					end if;
+				check := 0;
+				-- tang so nguoi ra ngoai 
+				if (nguoi_ra(0) = 9) then 
+					nguoi_ra(1) <= nguoi_ra(1) + 1;
+					nguoi_ra(0) <= 0;
+				else 
+					nguoi_ra(0) <= nguoi_ra(0) + 1;
+				end if;
 			else 
 				if ( check = 1) then 
 					check := 0; -- reset state 
@@ -77,7 +88,9 @@ begin
 					check := 1;
 				end if;
 			end if;
-		elsif(sensor_2 = '1') then 
+		
+		elsif(sensor_2 = '1' and start_wait2 ='0' ) then
+			start_wait2 = 1 ; --wait for sensor_2 = 0;
 			 if (check = 1) then
 					check := 0; -- reset state 
 					--tang so nguoi vao trong 
@@ -87,7 +100,7 @@ begin
 					else 
 						nguoi_vao(0) <= nguoi_vao(0) + 1;
 					end if;
-			else 
+			else
 				if ( check = 3 ) then 
 					check := 0;
 				else 
@@ -95,7 +108,6 @@ begin
 				end if;
 				
 			 end if;
-		end if;
 	end if; 
 end process;
 -----------------------------------------------
