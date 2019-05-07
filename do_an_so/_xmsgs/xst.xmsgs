@@ -5,7 +5,7 @@
      behavior or data corruption.  It is strongly advised that
      users do not edit the contents of this file. -->
 <messages>
-<msg type="warning" file="HDLCompiler" num="1369" delta="old" >"E:\Users\VuHaiLong\Desktop\PTIT4\do_an_so\do_an_so\main.vhd" Line 70: Possible infinite loop; process does not have a wait statement
+<msg type="warning" file="HDLCompiler" num="1369" delta="old" >"E:\Users\VuHaiLong\Desktop\PTIT4\do_an_so\do_an_so\main.vhd" Line 59: Possible infinite loop; process does not have a wait statement
 </msg>
 
 </messages>
