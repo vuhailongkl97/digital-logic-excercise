@@ -17,14 +17,9 @@ entity counter_person is
 end counter_person;
 
 architecture Behavioral of counter_person is
-	signal count : unsigned(18 downto 0):= (others => '0');
-	signal step_count: unsigned(7 downto 0):= (others => '0');
-	signal s_speed: integer := 5;
 	signal persion_number_go_out: integer := 0;
 	signal persion_number_come_in: integer := 0;
-
 	type arr_number_splited is array (1 downto 0) of integer;
-	
 	signal nguoi_vao :arr_number_splited := (0,0);
 	signal nguoi_ra :arr_number_splited := (0,0);
 
@@ -38,16 +33,15 @@ architecture Behavioral of counter_person is
 	x"10",x"20",x"20",	-- > number_persons_in 78
 	x"20",x"11",x"20",x"20",	-- < number_persion_out  11 12
 	x"20",x"50",x"45",x"52",x"53",x"4F",x"4E");
-	type dec is array (0 to 9) of std_logic_vector(7 downto 0);
-	signal number : dec := (X"30", X"31",X"32", X"33",X"34", X"35",X"36", X"37",X"38", X"39");
-	--------------------------------------------------
 begin
 
 ----------------------------------------------
 Div : process(clk)
 	begin
 		if(falling_edge(clk)) then 
-			if(count_clk < 12000000) then 
+		 	-- cu (2*2M) /50M xung thi check sensor 1 lan 
+			
+			if(count_clk < 2000000) then 
 				count_clk <= count_clk + 1; 
 			else
 				count_clk <= 0; 
@@ -62,16 +56,21 @@ variable start_wait1 : integer := 0;
 variable start_wait2 : integer := 0;
 begin
 	if(falling_edge(clk_1hz)) then 
+		-- doi cho den khi nguoi di qua cam bien 1
 		if (sensor_1 = '0' and start_wait1 = 1) then
 			start_wait1 = 0;
 		end if;
 		
+		-- doi cho den khi nguoi di qua cam bien 2
 		if (sensor_2 = '0' and start_wait2 = 1) then
 			start_wait2 = 0;
 		end if;
-		
+
+		-- khi nguoi da di qua cam bien va sensor = 1
 		if(sensor_1 = '1' and start_wait1 = 0 ) then 
 			start_wait1 = 1 ;
+			-- khi da di qua cam bien sensor_2 thi check = 3
+			-- kiem tra nguoi da di qua sensor_2 truoc do hay ko 
 			if ( check = 3 ) then 
 				check := 0;
 				-- tang so nguoi ra ngoai 
@@ -82,8 +81,10 @@ begin
 					nguoi_ra(0) <= nguoi_ra(0) + 1;
 				end if;
 			else 
+				-- neu day la lan qua thu 2 cung 1 cam bien >> reset
 				if ( check = 1) then 
 					check := 0; -- reset state 
+				-- neu day la lan qua dau tien >> gan check = 1
 				else 
 					check := 1;
 				end if;
@@ -91,6 +92,8 @@ begin
 		
 		elsif(sensor_2 = '1' and start_wait2 ='0' ) then
 			start_wait2 = 1 ; --wait for sensor_2 = 0;
+			-- khi da di qua cam bien sensor_1 thi check = 3
+			-- kiem tra nguoi da di qua sensor_1 truoc do hay ko 
 			 if (check = 1) then
 					check := 0; -- reset state 
 					--tang so nguoi vao trong 
@@ -101,9 +104,11 @@ begin
 						nguoi_vao(0) <= nguoi_vao(0) + 1;
 					end if;
 			else
+				-- neu day la lan qua thu 2 cung 1 cam bien >> reset
 				if ( check = 3 ) then 
 					check := 0;
 				else 
+				--neu day la lan qua lan dau tien thi check = 3
 					check := 3;
 				end if;
 				
@@ -123,6 +128,7 @@ lcd : process(clk)
 			lcd_e <= '1';
 			-- bieu dien hang chuc 
 			if(j = 7) then
+				-- so 1 tuong ung voi X"31" tuong tu voi cac so khac 
 				if( nguoi_vao(1) = 1) then data <= X"31"; 
 				elsif( nguoi_vao(1) = 2) then data <= X"32"; 
 				elsif( nguoi_vao(1) = 3) then data <= X"33"; 
@@ -134,6 +140,7 @@ lcd : process(clk)
 				elsif( nguoi_vao(1) = 9) then data <= X"39"; 
 				else data <= X"0";
 				end if; 
+			-- bieuu dien han don vi 
 			elsif(j = 8) then
 				if( nguoi_vao(0) = 0) then data <= X"31"; 
 					elsif( nguoi_vao(0) = 2) then data <= X"32"; 
@@ -147,6 +154,7 @@ lcd : process(clk)
 					else data <= X"0";
 				end if; 
 				
+			-- bieu dien hang chuc 
 			elsif(j = 11) then
 				if( nguoi_ra(1) = 1) then data <= X"31"; 
 				elsif( nguoi_ra(1) = 2) then data <= X"32"; 
@@ -159,6 +167,7 @@ lcd : process(clk)
 				elsif( nguoi_ra(1) = 9) then data <= X"39"; 
 				else data <= X"0";				
 				end if; 
+			-- bieu dien hang don vi 
 			elsif(j = 12) then
 					if( nguoi_ra(0) = 1) then data <= X"31"; 
 					elsif( nguoi_ra(0) = 2) then data <= X"32"; 
@@ -171,10 +180,10 @@ lcd : process(clk)
 					elsif( nguoi_ra(0) = 9) then data <= X"39"; 
 					else data <= X"0";
 					end if; 		
-			-- init lcd 
+			-- cac vi tri datas(j) se la khoi tao lcd va hien thi chu "PERSON" 
 			else data <= datas(j)(7 downto 0); 
 			end if;
-		-- delay 
+		-- delay de gui du lieu , lenh vao lcd 
 		elsif i > 1000000 and i < 2000000 then
 			i := i + 1;
 			lcd_e <= '0';
@@ -182,11 +191,14 @@ lcd : process(clk)
 			j := j + 1;
 			i := 0;
 		end if;
+		-- che do gui lenh
 		if j <= 5  then
 			lcd_rs <= '0';    --command signal
+		-- che do gui du lieu 
 		elsif j > 5   then
 			lcd_rs <= '1';   --data signal
 		end if;
+		-- reset ve che do gui lenh 
 		if j = N+1 then  --repeated display of data
 			j := 5;
 		end if;
